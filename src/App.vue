@@ -44,8 +44,9 @@ export default {
     };
   },
   methods: {
-    selectNode(nodeData) {
-      alert("node " + nodeData.name + " is selected");
+    selectNode(node) {
+      console.log(node);
+      alert("node " + node.nodeData.name + " is selected");
     }
   }
 };

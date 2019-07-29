@@ -379,7 +379,7 @@ export default {
 .orgchart .node:hover {
   background-color: rgba(238, 217, 54, 0.5);
   transition: 0.5s;
-  cursor: default;
+  cursor: pointer;
   z-index: 20;
 }
 

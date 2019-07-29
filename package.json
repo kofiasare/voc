@@ -1,6 +1,6 @@
 {
     "name": "voch",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "description": "organization chart component based vuejs",
     "scripts": {
         "serve": "vue-cli-service serve",

@@ -5,7 +5,11 @@
         <td
           :colspan="datasource.children && datasource.children.length ? datasource.children.length*2 : null"
         >
-          <div class="node" :id="datasource.id" @click.stop="handleClick(datasource)">
+          <div
+            class="node"
+            :id="datasource.id"
+            @click.stop="handleClick({$event, nodeData: datasource})"
+          >
             <slot :node-data="datasource">
               <div class="title">
                 <i class="fa fa-users symbol"></i>
