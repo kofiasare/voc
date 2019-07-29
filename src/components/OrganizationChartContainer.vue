@@ -1,5 +1,6 @@
 <template>
-  <div v-bind="{ scopedSlots: $scopedSlots }"
+  <div
+    v-bind="{ scopedSlots: $scopedSlots }"
     class="orgchart-container"
     @wheel="zoom && zoomHandler($event)"
     @mouseup="pan && panning && panEndHandler($event)"
@@ -10,9 +11,14 @@
       @mousedown="pan && panStartHandler($event)"
       @mousemove="pan && panning && panHandler($event)"
     >
-      <organization-chart-node :datasource="datasource" :handle-click="handleClick">
+      <organization-chart-node
+        :datasource="datasource"
+        :handle-click="handleClick"
+        :nodeTitle="nodeTitle"
+        :nodeContent="nodeContent"
+      >
         <template v-for="slot in Object.keys($scopedSlots)" :slot="slot" slot-scope="scope">
-          <slot :name="slot" v-bind="scope"/>
+          <slot :name="slot" v-bind="scope" />
         </template>
       </organization-chart-node>
     </div>
@@ -20,11 +26,11 @@
 </template>
 
 <script>
-import $ from 'jquery'
-import OrganizationChartNode from './OrganizationChartNode.vue'
+import $ from "jquery";
+import OrganizationChartNode from "./OrganizationChartNode.vue";
 
 export default {
-  name: 'Container',
+  name: "Container",
   props: {
     datasource: {
       type: Object,
@@ -47,115 +53,140 @@ export default {
       type: Number,
       required: false,
       default: 7
+    },
+
+    nodeTitle: {
+      type: String,
+      default: "name"
+    },
+
+    nodeContent: {
+      type: String,
+      default: ""
     }
   },
-  data () {
+
+  data() {
     return {
-      cursorVal: 'default',
+      cursorVal: "default",
       panning: false,
       startX: 0,
       startY: 0,
-      transformVal: ''
-    }
+      transformVal: ""
+    };
   },
+
   components: {
     OrganizationChartNode
   },
+
   methods: {
-    handleClick (nodeData) {
-      this.$emit('node-click', nodeData);
+    handleClick(nodeData) {
+      this.$emit("node-click", nodeData);
     },
-    panEndHandler () {
-      this.panning = false
-      this.cursorVal = 'default'
+    panEndHandler() {
+      this.panning = false;
+      this.cursorVal = "default";
     },
-    panHandler (e) {
-        let newX = 0
-        let newY = 0
-        if (!e.targetTouches) { // pand on desktop
-          newX = e.pageX - this.startX
-          newY = e.pageY - this.startY
-        } else if (e.targetTouches.length === 1) { // pan on mobile device
-          newX = e.targetTouches[0].pageX - this.startX
-          newY = e.targetTouches[0].pageY - this.startY
-        } else if (e.targetTouches.length > 1) {
-          return;
-        }
-        if (this.transformVal === '') {
-          if (this.transformVal.indexOf('3d') === -1) {
-            this.transformVal = 'matrix(1,0,0,1,' + newX + ',' + newY + ')'
-          } else {
-            this.transformVal = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,' + newX + ', ' + newY + ',0,1)'
-          }
-        } else {
-          let matrix = this.transformVal.split(',')
-          if (this.transformVal.indexOf('3d') === -1) {
-            matrix[4] = newX
-            matrix[5] = newY + ')'
-          } else {
-            matrix[12] = newX
-            matrix[13] = newY
-          }
-          this.transformVal = matrix.join(',')
-        }
-    },
-    panStartHandler (e) {
-      if ($(e.target).closest('.node').length) {
-        this.panning = false
-        return
-      } else {
-        this.cursorVal = 'move'
-        this.panning = true
-      }
-      let lastX = 0
-      let lastY = 0
-      if (this.transformVal !== '') {
-        let matrix = this.transformVal.split(',')
-        if (this.transformVal.indexOf('3d') === -1) {
-          lastX = parseInt(matrix[4])
-          lastY = parseInt(matrix[5])
-        } else {
-          lastX = parseInt(matrix[12])
-          lastY = parseInt(matrix[13])
-        }
-      }
-      if (!e.targetTouches) { // pand on desktop
-        this.startX = e.pageX - lastX
-        this.startY = e.pageY - lastY
-      } else if (e.targetTouches.length === 1) { // pan on mobile device
-        this.startX = e.targetTouches[0].pageX - lastX
-        this.startY = e.targetTouches[0].pageY - lastY
+    panHandler(e) {
+      let newX = 0;
+      let newY = 0;
+      if (!e.targetTouches) {
+        // pand on desktop
+        newX = e.pageX - this.startX;
+        newY = e.pageY - this.startY;
+      } else if (e.targetTouches.length === 1) {
+        // pan on mobile device
+        newX = e.targetTouches[0].pageX - this.startX;
+        newY = e.targetTouches[0].pageY - this.startY;
       } else if (e.targetTouches.length > 1) {
-        return
+        return;
+      }
+      if (this.transformVal === "") {
+        if (this.transformVal.indexOf("3d") === -1) {
+          this.transformVal = "matrix(1,0,0,1," + newX + "," + newY + ")";
+        } else {
+          this.transformVal =
+            "matrix3d(1,0,0,0,0,1,0,0,0,0,1,0," + newX + ", " + newY + ",0,1)";
+        }
+      } else {
+        let matrix = this.transformVal.split(",");
+        if (this.transformVal.indexOf("3d") === -1) {
+          matrix[4] = newX;
+          matrix[5] = newY + ")";
+        } else {
+          matrix[12] = newX;
+          matrix[13] = newY;
+        }
+        this.transformVal = matrix.join(",");
       }
     },
-    setChartScale (newScale) {
-      let matrix = ''
-      let targetScale = 1
-      if (this.transformVal === '') {
-        this.transformVal = 'matrix(' + newScale + ', 0, 0, ' + newScale + ', 0, 0)'
+    panStartHandler(e) {
+      if ($(e.target).closest(".node").length) {
+        this.panning = false;
+        return;
       } else {
-        matrix = this.transformVal.split(',')
-        if (this.transformVal.indexOf('3d') === -1) {
-          targetScale = Math.abs(window.parseFloat(matrix[3]) * newScale)
-          if (targetScale > this.zoomoutLimit && targetScale < this.zoominLimit) {
-            matrix[0] = 'matrix(' + targetScale
-            matrix[3] = targetScale
-            this.transformVal = matrix.join(',')
+        this.cursorVal = "move";
+        this.panning = true;
+      }
+      let lastX = 0;
+      let lastY = 0;
+      if (this.transformVal !== "") {
+        let matrix = this.transformVal.split(",");
+        if (this.transformVal.indexOf("3d") === -1) {
+          lastX = parseInt(matrix[4]);
+          lastY = parseInt(matrix[5]);
+        } else {
+          lastX = parseInt(matrix[12]);
+          lastY = parseInt(matrix[13]);
+        }
+      }
+      if (!e.targetTouches) {
+        // pand on desktop
+        this.startX = e.pageX - lastX;
+        this.startY = e.pageY - lastY;
+      } else if (e.targetTouches.length === 1) {
+        // pan on mobile device
+        this.startX = e.targetTouches[0].pageX - lastX;
+        this.startY = e.targetTouches[0].pageY - lastY;
+      } else if (e.targetTouches.length > 1) {
+        return;
+      }
+    },
+    setChartScale(newScale) {
+      let matrix = "";
+      let targetScale = 1;
+      if (this.transformVal === "") {
+        this.transformVal =
+          "matrix(" + newScale + ", 0, 0, " + newScale + ", 0, 0)";
+      } else {
+        matrix = this.transformVal.split(",");
+        if (this.transformVal.indexOf("3d") === -1) {
+          targetScale = Math.abs(window.parseFloat(matrix[3]) * newScale);
+          if (
+            targetScale > this.zoomoutLimit &&
+            targetScale < this.zoominLimit
+          ) {
+            matrix[0] = "matrix(" + targetScale;
+            matrix[3] = targetScale;
+            this.transformVal = matrix.join(",");
           }
         } else {
-          targetScale = Math.abs(window.parseFloat(matrix[5]) * newScale)
-          if (targetScale > this.zoomoutLimit && targetScale < this.zoominLimit) {
-            matrix[0] = 'matrix3d(' + targetScale
-            matrix[5] = targetScale
-            this.transformVal = matrix.join(',')
+          targetScale = Math.abs(window.parseFloat(matrix[5]) * newScale);
+          if (
+            targetScale > this.zoomoutLimit &&
+            targetScale < this.zoominLimit
+          ) {
+            matrix[0] = "matrix3d(" + targetScale;
+            matrix[5] = targetScale;
+            this.transformVal = matrix.join(",");
           }
         }
       }
     },
-    zoomHandler (e) {
-      let newScale  = 1 + (e.deltaY > 0 ? -0.2 : 0.2)
-      this.setChartScale(newScale)
+    zoomHandler(e) {
+      let newScale = 1 + (e.deltaY > 0 ? -0.2 : 0.2);
+      this.setChartScale(newScale);
     }
   }
 };
