@@ -406,14 +406,14 @@ export default {
   text-align: center;
   font-size: 12px;
   font-weight: bold;
-  height: 20px;
-  line-height: 20px;
+  height: 27px;
+  line-height: 27px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   background-color: rgba(217, 83, 79, 0.8);
   color: #fff;
-  border-radius: 4px 4px 0 0;
+  border-radius: 0;
 }
 
 .orgchart.b2t .node .title {
