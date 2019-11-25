@@ -11,10 +11,7 @@
             @click.stop="handleClick({$event, nodeData: datasource})"
           >
             <slot :node-data="datasource">
-              <div class="title">
-                <i class="fa fa-users symbol"></i>
-                {{ datasource[nodeTitle] }}
-              </div>
+              <div class="title">{{ datasource[nodeTitle] }}</div>
               <div v-if="nodeContent" class="content">{{ datasource[nodeContent] }}</div>
             </slot>
           </div>
